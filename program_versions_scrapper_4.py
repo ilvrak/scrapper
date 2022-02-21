@@ -2,35 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 
-def get_soup(checkurl):
-    '''getting soup, if requests failed - returns None'''
-    try:
-        responce = requests.get(checkurl)
-        print('checking:', checkurl, responce.status_code)
-        return BeautifulSoup(responce.content, 'html.parser')
-    except:
-        return None
-
-def write_csv(dict, filename='output.csv'):
-    '''at the end - writes data to csv'''
-    with open(filename, 'w', encoding='utf-8') as csvfile:
-        writer = csv.DictWriter(
-            csvfile,
-            fieldnames = ['PackageID', 'Name', 'VersionOnWeb', 'CheckUrl', 'IsOfficialLink', 'DownloadUrl'],
-            delimiter = ',',
-            extrasaction='ignore',
-            lineterminator='\r',
-            escapechar=' ',
-            quoting=csv.QUOTE_NONE
-            )
-
-        writer.writeheader()
-        for name, data in dict.items():
-            writer.writerow({'PackageID': data['packageid'], 'Name': name, 'VersionOnWeb': data['ver'],
-                             'CheckUrl': data['checkurl'], 'IsOfficialLink': data['isofficiallink'], 'DownloadUrl': data['downurl'] })
-
-    return None
-
 apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.appspot.com/win', 'isofficiallink': True, 'ver':'',
                          'downurl': 'https://chromeenterprise.google/browser/download/thank-you/?platform=WIN64_MSI&channel=stable&usagestats=0'},
         'edge'         :{'packageid':'AAA00025', 'checkurl':'https://www.microsoft.com/ru-ru/edge/business/download','isofficiallink': True,'ver':'',
@@ -89,153 +60,97 @@ apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.
                          'downurl': 'https://keepassxc.org/download/#windows'}
         }
 
+def get_soup(checkurl):
+    '''getting soup, if requests failed - returns None'''
+    print('checking:', checkurl, end='')
+    responce = requests.get(checkurl)
+    print(' - ok')
+    return BeautifulSoup(responce.content, 'html.parser')
+
+def write_csv(dict, filename='output.csv'):
+    '''at the end - writes data to csv'''
+    with open(filename, 'w', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(
+            csvfile,
+            fieldnames = ['PackageID', 'Name', 'VersionOnWeb', 'CheckUrl', 'IsOfficialLink', 'DownloadUrl'],
+            delimiter = ',',
+            extrasaction='ignore',
+            lineterminator='\r',
+            escapechar=' ',
+            quoting=csv.QUOTE_NONE
+            )
+
+        writer.writeheader()
+        for name, data in dict.items():
+            writer.writerow({'PackageID': data['packageid'], 'Name': name, 'VersionOnWeb': data['ver'],
+                             'CheckUrl': data['checkurl'], 'IsOfficialLink': data['isofficiallink'], 'DownloadUrl': data['downurl'] })
+
 
 def scrapper():
-
-    app = 'chrome'
-    soup = get_soup(apps[app]['checkurl'])
-    version = str(soup)
-    apps[app]['ver'] = version
-
-    app = 'edge'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='m-product-placement-item f-size-large').find(class_='build-version').text[1:-1]
-    apps[app]['ver'] = version
-    
-    app = 'yandex'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='lc-styled-text__text lc-styled-text__text_align_initial').text.split()[-1]
-    apps[app]['ver'] = version
-
-    app = 'firefox'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='c-release-list').find('li').find('a').text
-    apps[app]['ver'] = version
-
-    app = 'reader'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='std std-ref').text.split()[0]
-    apps[app]['ver'] = version
-
-    app = 'xmind'
-    soup = get_soup(apps[app]['checkurl'])
-    tagtext = soup.find(class_='container clearfix').find('p').text
-    version = tagtext.split()[7][1:-2]
-    apps[app]['ver'] = version
-
-    app = 'java'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(href='/java/technologies/downloads/#java8').text.split()[-1]
-    apps[app]['ver'] = version
-
-    app = 'far'
-    soup = get_soup(apps[app]['checkurl'])
-    preversion = soup.find('b').text.split()
-    version = preversion[2][1:] + '.' + preversion[4]
-    apps[app]['ver'] = version
-
-    app = 'powerbi'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='fileinfo').find('p').text
-    apps[app]['ver'] = version
-
-    app = 'notepad'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='patterns-list').find('a').text.split()[1]
-    apps[app]['ver'] = version
-
-    app = 'bitrix'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='ver').text
-    apps[app]['ver'] = version
-
-    app = 'microsip'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='box-inner').find('a').text.split('-')[-1][:-4]
-    apps[app]['ver'] = version
-
-    app = 'skype'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(itemprop='softwareVersion').text
-    apps[app]['ver'] = version
-
-    app = 'openshell'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='Box-row position-relative d-flex').find('a').text.strip()
-    apps[app]['ver'] = version
-
-    app = 'aimp'
-    soup = get_soup(apps[app]['checkurl'])
-    version = '.'.join(soup.find(class_='button_download_text').text.split()[::2])[1:]
-    apps[app]['ver'] = version
-
-    app = 'freecommander'
-    soup = get_soup(apps[app]['checkurl'])
-    version = ' '.join(soup.find(class_='entry-content').find('span').text.split()[2:-2])
-    apps[app]['ver'] = version
-
-    app = 'rdm'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='compare-editions-right').find(class_='compare-editions-link').text.split()[1]
-    apps[app]['ver'] = version
-
-    app = '7zip'
-    soup = get_soup(apps[app]['checkurl'])
-    if soup:
-        version = soup.find(class_='NewsTitle').text.split()[-1]
+    for app in apps:
+        try:
+            soup = get_soup(apps[app]['checkurl'])
+        except Exception as e:
+            print(' - ', e)
+            continue
+        if app == 'chrome':
+            version = str(soup)
+        if app == 'edge':
+            version = soup.find(class_='m-product-placement-item f-size-large').find(class_='build-version').text[1:-1]
+        if app == 'yandex':
+            version = soup.find(class_='lc-styled-text__text lc-styled-text__text_align_initial').text.split()[-1]
+        if app == 'firefox':
+            version = soup.find(class_='c-release-list').find('li').find('a').text
+        if app == 'reader':
+            version = soup.find(class_='std std-ref').text.split()[0]
+        if app == 'xmind':
+            version = soup.find(class_='container clearfix').find('p').text.split()[7][1:-2]
+        if app == 'java':
+            version = soup.find(href='/java/technologies/downloads/#java8').text.split()[-1]
+        if app == 'far':
+            tag = soup.find('b').text.split()
+            version = tag[2][1:] + '.' + tag[4]
+        if app == 'powerbi':
+            version = soup.find(class_='fileinfo').find('p').text
+        if app == 'notepad':
+            version = soup.find(class_='patterns-list').find('a').text.split()[1]
+        if app == 'bitrix':
+            version = soup.find(class_='ver').text
+        if app == 'microsip':
+            version = soup.find(class_='box-inner').find('a').text.split('-')[-1][:-4]
+        if app == 'skype':
+            version = soup.find(itemprop='softwareVersion').text
+        if app == 'openshell':
+            version = soup.find(class_='Box-row position-relative d-flex').find('a').text.strip()
+        if app == 'aimp':
+            version = '.'.join(soup.find(class_='button_download_text').text.split()[::2])[1:]
+        if app == 'freecommander':
+            version = ' '.join(soup.find(class_='entry-content').find('span').text.split()[2:-2])
+        if app == 'rdm':
+            version = soup.find(class_='compare-editions-right').find(class_='compare-editions-link').text.split()[1]
+        if app == '7zip':
+            version = soup.find(class_='NewsTitle').text.split()[-1]
+        if app == 'winrar':
+            version = soup.find(class_='headtbl').find('a').find('b').text.split()[-1]
+        if app == 'vlc':
+            version = soup.find(id='downloadDetails').find(id='downloadVersion').text.strip()
+        if app == 'freecam':
+            version = '.'.join(soup.find(id='downloadItemLink').get('href').split('/')[-1][-9:-4].split('_'))
+        if app == 'lightshot':
+            version = soup.find('title').text.split('|')[-1].split()[-1]
+        if app == 'paintnet':
+            version = soup.find(class_='d-inline mr-3').text
+        if app == 'fsvrecorder':
+            version = soup.find(class_='spec_table_padding1 spec_table_content_1').text.split()[-1]
+        if app == 'itunes':
+            version = soup.find('title').text.split('|')[-1].split()[-1]
+        if app == 'joplin':
+            version = soup.find(class_='d-inline mr-3').text[1:]
+        if app == 'joxi':
+            version = soup.find(itemprop='softwareVersion').text.strip()
+        if app == 'keepassxc':
+            version = soup.find(class_='label label-success').text[1:]
         apps[app]['ver'] = version
-    else:
-        print(app, 'connection failed')
-
-    app = 'winrar'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='headtbl').find('a').find('b').text.split()[-1]
-    apps[app]['ver'] = version
-
-    app = 'vlc'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(id='downloadDetails').find(id='downloadVersion').text.strip()
-    apps[app]['ver'] = version
-
-    app = 'freecam'
-    soup = get_soup(apps[app]['checkurl'])
-    version = '.'.join(soup.find(id='downloadItemLink').get('href').split('/')[-1][-9:-4].split('_'))
-    apps[app]['ver'] = version
-
-    app = 'lightshot'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find('title').text.split('|')[-1].split()[-1]
-    apps[app]['ver'] = version
-
-    app = 'paintnet'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='d-inline mr-3').text
-    apps[app]['ver'] = version
-
-    app = 'fsvrecorder'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='spec_table_padding1 spec_table_content_1').text.split()[-1]
-    apps[app]['ver'] = version
-
-    app = 'itunes'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find('title').text.split('|')[-1].split()[-1]
-    apps[app]['ver'] = version
-
-    app = 'joplin'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='d-inline mr-3').text[1:]
-    apps[app]['ver'] = version
-
-    app = 'joxi'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(itemprop='softwareVersion').text.strip()
-    apps[app]['ver'] = version
-
-    app = 'keepassxc'
-    soup = get_soup(apps[app]['checkurl'])
-    version = soup.find(class_='label label-success').text[1:]
-    apps[app]['ver'] = version
 
 
 if __name__ == '__main__':
