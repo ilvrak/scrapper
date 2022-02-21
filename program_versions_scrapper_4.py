@@ -24,8 +24,8 @@ apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.
                          'downurl': 'https://notepad-plus-plus.org/downloads/'},
         'bitrix'       :{'packageid':'AAA0001E', 'checkurl':'https://bitrix24.ru.malavida.com/windows/#gref','isofficiallink': False,'ver':'',
                          'downurl': 'https://www.bitrix24.ru/features/desktop.php'},
-	    'microsip'     :{'packageid':'AAA0006F', 'checkurl':'https://www.microsip.org/downloads','isofficiallink': True,'ver':''
-                        , 'downurl': 'https://www.microsip.org/downloads'},
+	    'microsip'     :{'packageid':'AAA0006F', 'checkurl':'https://www.microsip.org/downloads','isofficiallink': True,'ver':'',
+                         'downurl': 'https://www.microsip.org/downloads'},
 	    'skype'        :{'packageid':'AAA00042', 'checkurl':'https://www.techspot.com/downloads/50-skype.html','isofficiallink': False,'ver':'',
                          'downurl': 'https://go.skype.com/windows.desktop.download'},
 	    'openshell'    :{'packageid':'AAA00023', 'checkurl':'https://github.com/Open-Shell/Open-Shell-Menu/tags','isofficiallink': True,'ver':'',
