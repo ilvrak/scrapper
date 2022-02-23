@@ -138,7 +138,7 @@ def scrap_all():
 
 
 if __name__ == '__main__':
-    if argv:
+    if len(argv) > 1:
         scrap_one(argv[1])
     else:
         scrap_all()
