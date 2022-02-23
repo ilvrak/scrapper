@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 from sys import argv
-import os
+from os import getcwd
 
 apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.appspot.com/win', 'isofficiallink': True,
                          'findmethod': "str(soup)", 'ver':'',
@@ -113,7 +113,7 @@ def write_csv(dict, filename='output.csv'):
         for name, data in dict.items():
             writer.writerow({'PackageID': data['packageid'], 'Name': name, 'VersionOnWeb': data['ver'],
                              'CheckUrl': data['checkurl'], 'IsOfficialLink': data['isofficiallink'], 'DownloadUrl': data['downurl'] })
-        print(f'CSV stored in: {os.getcwd()}\output.csv')
+        print(f'CSV stored in: {getcwd()}\output.csv')
 
 
 def scrap_one(app):
