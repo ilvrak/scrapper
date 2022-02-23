@@ -113,7 +113,7 @@ def write_csv(dict, filename='output.csv'):
         for name, data in dict.items():
             writer.writerow({'PackageID': data['packageid'], 'Name': name, 'VersionOnWeb': data['ver'],
                              'CheckUrl': data['checkurl'], 'IsOfficialLink': data['isofficiallink'], 'DownloadUrl': data['downurl'] })
-        print(f'{os.getcwd()}\output.csv')
+        print(f'CSV stored in: {os.getcwd()}\output.csv')
 
 
 def scrap_one(app):
@@ -140,11 +140,14 @@ def scrap_all():
 
 if __name__ == '__main__':
     match argv:
+        case program,:
+            print("Supported single app keys: ")
+            print(*[app for app in apps])
+            print("For scrap all apps and export to CSV, use key: all")
         case program, app if app in apps:
             scrap_one(app)
-        case program, not_in_apps:
-            print(f"Application '{not_in_apps}' not supported")
-        case program,:
+        case program, 'all':
             scrap_all()
             write_csv(apps)
-    print('done')
+        case program, any_other:
+            print(f"Application '{any_other}' not supported")
