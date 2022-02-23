@@ -120,8 +120,11 @@ def scrap_one(app):
         soup = get_soup(apps[app]['checkurl'])
     except Exception as e:
         print(' - ', e)
-    apps[app]['ver'] = eval(apps[app]['findmethod'])
-    print(f"{app}: {apps[app]['ver']}")
+        apps[app]['ver'] = 'failed'
+    else:
+        apps[app]['ver'] = eval(apps[app]['findmethod'])
+    finally:
+        print(f"{app}: {apps[app]['ver']}")
 
 def scrap_all():
     for app in apps:
@@ -129,6 +132,7 @@ def scrap_all():
             soup = get_soup(apps[app]['checkurl'])
         except Exception as e:
             print(' - ', e)
+            apps[app]['ver'] = 'failed'
         else:
             apps[app]['ver'] = eval(apps[app]['findmethod'])
 
