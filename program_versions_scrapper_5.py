@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 from sys import argv
+import os
 
 apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.appspot.com/win', 'isofficiallink': True,
                          'findmethod': "str(soup)", 'ver':'',
@@ -47,7 +48,7 @@ apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.
                          'downurl': 'https://github.com/Open-Shell/Open-Shell-Menu/releases'},
         'aimp'         :{'packageid':'AAA0008A', 'checkurl':'https://www.aimp.ru/?do=download&os=windows','isofficiallink': True,
                          'findmethod': "'.'.join(soup.find(class_='button_download_text').text.split()[::2])[1:]", 'ver':'',
-                         'downurl': 'https://www.aimp.ru/?do=download&os=windows'},
+                         'downurl': 'https://www.aimp.ru/?do=download.file&id=4'},
         'freecommander':{'packageid':'AAA00062', 'checkurl':'https://freecommander.com/ru/%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B8/','isofficiallink': True,
                          'findmethod': "' '.join(soup.find(class_='entry-content').find('span').text.split()[2:-2])", 'ver':'',
                          'downurl': 'https://freecommander.com/ru/%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B8/'},
@@ -90,7 +91,6 @@ apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.
         }
 
 def get_soup(checkurl):
-    '''getting soup, if requests failed - returns None'''
     print('checking:', checkurl, end='')
     responce = requests.get(checkurl)
     print(' - ok')
@@ -113,6 +113,7 @@ def write_csv(dict, filename='output.csv'):
         for name, data in dict.items():
             writer.writerow({'PackageID': data['packageid'], 'Name': name, 'VersionOnWeb': data['ver'],
                              'CheckUrl': data['checkurl'], 'IsOfficialLink': data['isofficiallink'], 'DownloadUrl': data['downurl'] })
+        print(f'{os.getcwd()}\output.csv')
 
 
 def scrap_one(app):
@@ -138,9 +139,12 @@ def scrap_all():
 
 
 if __name__ == '__main__':
-    if len(argv) > 1:
-        scrap_one(argv[1])
-    else:
-        scrap_all()
-        write_csv(apps)
+    match argv:
+        case program, app if app in apps:
+            scrap_one(app)
+        case program, not_in_apps:
+            print(f"Application '{not_in_apps}' not supported")
+        case program,:
+            scrap_all()
+            write_csv(apps)
     print('done')
