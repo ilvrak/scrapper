@@ -9,7 +9,7 @@ apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.
                          'downurl': 'https://chromeenterprise.google/browser/download/thank-you/?platform=WIN64_MSI&channel=stable&usagestats=0'},
         'edge'         :{'packageid':'AAA00025', 'checkurl':'https://www.microsoft.com/ru-ru/edge/business/download','isofficiallink': True,
                          'findmethod': "soup.find(class_='m-product-placement-item f-size-large').find(class_='build-version').text[1:-1]", 'ver':'',
-                         'downurl': 'https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/6a6c1d52-db7d-4a6f-9acb-8bde082025ed/MicrosoftEdgeEnterpriseX64.msi'},
+                         'downurl': 'https://www.microsoft.com/ru-ru/edge/business/download'},
         'yandex'       :{'packageid':'AAA00022', 'checkurl':'https://browser.yandex.ru/constructor/','isofficiallink': True,
                          'findmethod': "soup.find(class_='lc-styled-text__text lc-styled-text__text_align_initial').text.split()[-1]", 'ver':'',
                          'downurl': 'https://browser.yandex.ru/constructor/build/2bbda80e-1d48-4c3c-99a0-3dce6f25edd8/'},
@@ -97,7 +97,6 @@ def get_soup(checkurl):
     return BeautifulSoup(responce.content, 'html.parser')
 
 def write_csv(dict, filename='output.csv'):
-    '''at the end - writes data to csv'''
     with open(filename, 'w', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(
             csvfile,
@@ -105,7 +104,6 @@ def write_csv(dict, filename='output.csv'):
             delimiter = ',',
             extrasaction='ignore',
             lineterminator='\r',
-            escapechar=' ',
             quoting=csv.QUOTE_NONE
             )
 
