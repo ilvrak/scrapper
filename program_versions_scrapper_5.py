@@ -10,9 +10,9 @@ apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.
         'edge'         :{'packageid':'AAA00025', 'checkurl':'https://www.microsoft.com/ru-ru/edge/business/download','isofficiallink': True,
                          'findmethod': "soup.find(class_='m-product-placement-item f-size-large').find(class_='build-version').text[1:-1]", 'ver':'',
                          'downurl': 'https://www.microsoft.com/ru-ru/edge/business/download'},
-        'yandex'       :{'packageid':'AAA00022', 'checkurl':'https://browser.yandex.ru/constructor/','isofficiallink': True,
-                         'findmethod': "soup.find(class_='lc-styled-text__text lc-styled-text__text_align_initial').text.split()[-1]", 'ver':'',
-                         'downurl': 'https://browser.yandex.ru/constructor/build/2bbda80e-1d48-4c3c-99a0-3dce6f25edd8/'},
+        #'yandex'       :{'packageid':'AAA00022', 'checkurl':'https://browser.yandex.ru/corp/','isofficiallink': True,
+        #                 'findmethod': "soup.find(class_='lc-styled-text__text lc-styled-text__text_align_initial').text.split()[-1]", 'ver':'',
+        #                 'downurl': 'https://browser.yandex.ru/constructor/build/2bbda80e-1d48-4c3c-99a0-3dce6f25edd8/'},
         'firefox'      :{'packageid':'AAA000BA', 'checkurl':'https://www.mozilla.org/en-US/firefox/releases/','isofficiallink': True,
                          'findmethod': "soup.find(class_='c-release-list').find('li').find('a').text", 'ver':'',
                          'downurl': 'https://www.mozilla.org/ru/firefox/enterprise/#download'},
@@ -90,11 +90,13 @@ apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.
                          'downurl': 'https://keepassxc.org/download/#windows'}
         }
 
+
 def get_soup(checkurl):
     print('checking:', checkurl, end='')
     responce = requests.get(checkurl)
     print(' - ok')
     return BeautifulSoup(responce.content, 'html.parser')
+
 
 def write_csv(dict, filename='output.csv'):
     with open(filename, 'w', encoding='utf-8') as csvfile:
@@ -124,6 +126,7 @@ def scrap_one(app):
         apps[app]['ver'] = eval(apps[app]['findmethod'])
     finally:
         print(f"{app}: {apps[app]['ver']}")
+
 
 def scrap_all():
     for app in apps:
