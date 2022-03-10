@@ -3,6 +3,20 @@ from bs4 import BeautifulSoup
 import csv
 from sys import argv
 from os import getcwd
+from random import choice
+
+
+desktop_agents = ['Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
+                 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
+                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
+                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14',
+                 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36',
+                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.98 Safari/537.36',
+                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.98 Safari/537.36',
+                 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36',
+                 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
+                 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0']
+
 
 apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.appspot.com/win', 'isofficiallink': True,
                          'findmethod': "str(soup)", 'ver':'',
@@ -10,9 +24,9 @@ apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.
         'edge'         :{'packageid':'AAA00025', 'checkurl':'https://www.microsoft.com/ru-ru/edge/business/download','isofficiallink': True,
                          'findmethod': "soup.find(class_='m-product-placement-item f-size-large').find(class_='build-version').text[1:-1]", 'ver':'',
                          'downurl': 'https://www.microsoft.com/ru-ru/edge/business/download'},
-        #'yandex'       :{'packageid':'AAA00022', 'checkurl':'https://browser.yandex.ru/corp/','isofficiallink': True,
-        #                 'findmethod': "soup.find(class_='lc-styled-text__text lc-styled-text__text_align_initial').text.split()[-1]", 'ver':'',
-        #                 'downurl': 'https://browser.yandex.ru/constructor/build/2bbda80e-1d48-4c3c-99a0-3dce6f25edd8/'},
+        'yandex'       :{'packageid':'AAA00022', 'checkurl':'https://browser.yandex.ru/corp/','isofficiallink': True,
+                         'findmethod': "soup.find(class_='lc-styled-text__text lc-styled-text__text_align_initial').text.split()[-1]", 'ver':'',
+                         'downurl': 'https://browser.yandex.ru/constructor/build/2bbda80e-1d48-4c3c-99a0-3dce6f25edd8/'},
         'firefox'      :{'packageid':'AAA000BA', 'checkurl':'https://www.mozilla.org/en-US/firefox/releases/','isofficiallink': True,
                          'findmethod': "soup.find(class_='c-release-list').find('li').find('a').text", 'ver':'',
                          'downurl': 'https://www.mozilla.org/ru/firefox/enterprise/#download'},
@@ -91,9 +105,13 @@ apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.
         }
 
 
+def random_headers():
+    return {'User-Agent': choice(desktop_agents),'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
+
+
 def get_soup(checkurl):
     print('checking:', checkurl, end='')
-    responce = requests.get(checkurl)
+    responce = requests.get(checkurl, headers=random_headers())
     print(' - ok')
     return BeautifulSoup(responce.content, 'html.parser')
 
