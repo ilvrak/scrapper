@@ -60,7 +60,7 @@ apps = {'chrome'       :{'packageid':'AAA00014', 'checkurl':'https://omahaproxy.
         'openshell'    :{'packageid':'AAA00023', 'checkurl':'https://github.com/Open-Shell/Open-Shell-Menu/tags','isofficiallink': True,
                          'findmethod': "soup.find(class_='Box-row position-relative d-flex').find('a').text.strip()", 'ver':'',
                          'downurl': 'https://github.com/Open-Shell/Open-Shell-Menu/releases'},
-        'aimp'         :{'packageid':'AAA0008A', 'checkurl':'https://www.aimp.ru/?do=download&os=windows','isofficiallink': True,
+        'aimp'         :{'packageid':'AAA0008A', 'checkurl':'https://www.aimp.ru','isofficiallink': True,
                          'findmethod': "'.'.join(soup.find(class_='button_download_text').text.split()[::2])[1:]", 'ver':'',
                          'downurl': 'https://www.aimp.ru/?do=download.file&id=4'},
         'freecommander':{'packageid':'AAA00062', 'checkurl':'https://freecommander.com/ru/%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B8/','isofficiallink': True,
@@ -109,9 +109,13 @@ def random_headers():
     return {'User-Agent': choice(desktop_agents),'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
 
 
-def get_soup(checkurl):
+def get_soup(app):
+    checkurl = apps[app]['checkurl']
     print('checking:', checkurl, end='')
-    responce = requests.get(checkurl, headers=random_headers())
+    if app == 'aimp':
+        responce = requests.get(checkurl, headers=random_headers(), verify=False)
+    else:
+        responce = requests.get(checkurl, headers=random_headers())
     print(' - ok')
     return BeautifulSoup(responce.content, 'html.parser')
 
@@ -136,7 +140,7 @@ def write_csv(dict, filename='output.csv'):
 
 def scrap_one(app):
     try:
-        soup = get_soup(apps[app]['checkurl'])
+        soup = get_soup(app)
     except Exception as e:
         print(' - ', e)
         apps[app]['ver'] = 'failed'
@@ -149,7 +153,7 @@ def scrap_one(app):
 def scrap_all():
     for app in apps:
         try:
-            soup = get_soup(apps[app]['checkurl'])
+            soup = get_soup(app)
         except Exception as e:
             print(' - ', e)
             apps[app]['ver'] = 'failed'
